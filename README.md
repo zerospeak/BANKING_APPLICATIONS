@@ -21,51 +21,42 @@ This document outlines the implementation of an enterprise-grade banking applica
 The application employs a layered architecture with clear separation of concerns:
 
 ```mermaid
-flowchart TD
-    classDef presentation fill:#42A5F5,color:#000,stroke:#1976D2
-    classDef application fill:#66BB6A,color:#000,stroke:#388E3C
-    classDef domain fill:#AB47BC,color:#fff,stroke:#7B1FA2
-    classDef infrastructure fill:#FF7043,color:#000,stroke:#E64A19
-    classDef database fill:#FFCA28,color:#000,stroke:#F57C00
-    
-    subgraph Presentation["Presentation Layer"]
-        A[MVC Controllers]:::presentation
-        B[Views]:::presentation
-        C[Client-Side Scripts]:::presentation
+graph TD
+    classDef ui fill:#42A5F5,color:#fff,stroke:#1976D2
+    classDef core fill:#66BB6A,color:#fff,stroke:#388E3C
+    classDef infra fill:#FF7043,color:#fff,stroke:#E64A19
+    classDef data fill:#AB47BC,color:#fff,stroke:#7B1FA2
+
+    subgraph UI["User Interface Layer"]
+        Web[KinderCare.Web]:::ui
+        Mobile[KinderCare.Mobile]:::ui
     end
-    
-    subgraph Application["Application Layer"]
-        D[Services]:::application
-        E[DTO Mappers]:::application
+
+    subgraph Core["Core Business Logic"]
+        Domain[KinderCare.Domain]:::core
+        Application[KinderCare.Application]:::core
     end
-    
-    subgraph Domain["Domain Layer"]
-        F[Entities]:::domain
-        G[Value Objects]:::domain
-        H[Domain Services]:::domain
+
+    subgraph Infrastructure["Infrastructure Services"]
+        API[KinderCare.API]:::infra
+        Infra[KinderCare.Infrastructure]:::infra
     end
-    
-    subgraph Infrastructure["Infrastructure Layer"]
-        I[Repositories]:::infrastructure
-        J[Unit of Work]:::infrastructure
-        K[CQRS Handlers]:::infrastructure
+
+    subgraph Data["Data Storage"]
+        DB[(MongoDB)]:::data
+        SQL[(PostgreSQL)]:::data
+        Cache[(Redis)]:::data
     end
-    
-    subgraph DB[(Database)]
-        L[(SQL Server)]:::database
-    end
-    
-    A --> D
-    B --> A
-    C --> A
-    D --> E
-    D --> H
-    E --> F
-    H --> F
-    H --> G
-    I --> L
-    J --> I
-    K --> D
+
+    %% Dependencies flow inward
+    Web --> API
+    Mobile --> API
+    API --> Application
+    Application --> Domain
+    Application --> Infra
+    Infra --> DB
+    Infra --> SQL
+    Infra --> Cache
 ```
 
 The diagram illustrates the four-layer architecture of our banking application:
